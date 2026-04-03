@@ -49,7 +49,7 @@ public class TransactionDAO {
 
     // Supprimer transaction par ID
     public void supprimer(int id) throws SQLException {
-        String sql = "DELETE FROM transactions WHERE id = ?";
+        String sql = "DELETE FROM transaction WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -59,7 +59,7 @@ public class TransactionDAO {
     // Lister transactions d’un utilisateur
     public List<Transaction> getTransactionsByUtilisateur(int utilisateurId) throws SQLException {
         List<Transaction> liste = new ArrayList<>();
-        String sql = "SELECT * FROM transactions WHERE utilisateur_id = ?";
+        String sql = "SELECT * FROM transaction WHERE utilisateur_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, utilisateurId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -75,5 +75,18 @@ public class TransactionDAO {
             }
         }
         return liste;
+    }
+
+    //Modifier une transaction existante
+    public void modifier(Transaction t) throws SQLException {
+        String sql = "UPDATE transaction SET type = ?, montant = ?, categorie = ?, date = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, t.getType().toString());
+            ps.setDouble(2, t.getMontant());
+            ps.setString(3, t.getCategorie());
+            ps.setString(4, t.getDate());
+            ps.setInt(5, t.getId());
+            ps.executeUpdate();
+        }
     }
 }

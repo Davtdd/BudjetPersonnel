@@ -12,12 +12,22 @@ public class Utilisateur {
     private String email;
     private String motDePasseHash;
 
+    // Constructeur pour l’inscription (mot de passe en clair → hash automatique)
     public Utilisateur(int id, String nom, String prenom, String email, String motDePasse) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
-        setMotDePasse(motDePasse); // Hash automatiquement
+        setMotDePasse(motDePasse);
+    }
+
+    // Constructeur pour la reconstruction depuis la base (hash déjà stocké)
+    public Utilisateur(int id, String nom, String prenom, String email, String motDePasseHash, boolean fromDB) {
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.motDePasseHash = motDePasseHash;  // on garde le hash tel quel
     }
 
     // Hash le mot de passe et stocke
@@ -36,7 +46,6 @@ public class Utilisateur {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
 
-            // Convertir les bytes en hexadécimal
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
@@ -47,7 +56,7 @@ public class Utilisateur {
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            return null; // en cas d’erreur
+            return null;
         }
     }
 
@@ -57,18 +66,13 @@ public class Utilisateur {
     public String getPrenom() { return prenom; }
     public String getEmail() { return email; }
 
+    // Setter pour l’ID (utilisé par le DAO)
+    public void setId(int id) { this.id = id; }
 
-    // setter package-private pour DAO seulement
-    public void setId(int id) {
-        this.id = id;
-    }
-    // getter package-private pour DAO seulement
+    // Getter pour le DAO (pour l’insertion)
     public String getMotDePasseHashForDAO() {
         return motDePasseHash;
     }
-    /**
-     * toString pour afficher proprement l'utilisateur
-     */
 
     @Override
     public String toString() {
@@ -80,6 +84,3 @@ public class Utilisateur {
                 '}';
     }
 }
-
-
-
